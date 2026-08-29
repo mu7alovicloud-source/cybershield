@@ -4,35 +4,55 @@ Set-Location $PSScriptRoot
 Write-Host '=== CyberShield Windows EXE Builder ===' -ForegroundColor Cyan
 Write-Host "Project: $PSScriptRoot"
 
-$python = Get-Command python -ErrorAction SilentlyContinue
-if (-not $python) { throw 'Python topilmadi. Python 3.11+ ni o''rnating va qayta urinib ko''ring.' }
+$python = "py"
+$pythonArgs = @("-3.13")
 
-python --version
-if ($LASTEXITCODE -ne 0) { throw 'Python ishlamayapti.' }
+& $python @pythonArgs --version
 
-python -m pip install --upgrade pip
-if ($LASTEXITCODE -ne 0) { throw 'pip yangilanmadi.' }
-python -m pip install -r .\requirements-desktop.txt pyinstaller
-if ($LASTEXITCODE -ne 0) { throw 'Dependency/PyInstaller o''rnatilmadi.' }
+Write-Host ''
+Write-Host 'Installing dependencies...' -ForegroundColor Yellow
 
-# Eski build qoldiqlarini tozalash.
+& $python @pythonArgs -m pip install --upgrade pip
+if ($LASTEXITCODE -ne 0) {
+    throw 'pip yangilanmadi.'
+}
+
+& $python @pythonArgs -m pip install -r .\requirements-desktop.txt pyinstaller
+if ($LASTEXITCODE -ne 0) {
+    throw 'Dependency/PyInstaller o''rnatilmadi.'
+}
+
+Write-Host ''
+Write-Host 'Cleaning old build...' -ForegroundColor Yellow
+
 Remove-Item -Recurse -Force .\build -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force .\dist -ErrorAction SilentlyContinue
-Remove-Item -Force .\CyberShield.spec -ErrorAction SilentlyContinue
 
-python -m PyInstaller --clean --noconfirm .\CyberShield.spec
+# CyberShield.spec faylini O'CHIRMAYMIZ.
+if (-not (Test-Path .\CyberShield.spec)) {
+    throw 'CyberShield.spec topilmadi.'
+}
+
+Write-Host ''
+Write-Host 'Building CyberShield.exe...' -ForegroundColor Yellow
+
+& $python @pythonArgs -m PyInstaller --clean --noconfirm .\CyberShield.spec
+
 if ($LASTEXITCODE -ne 0) {
     Write-Host ''
-    Write-Host 'BUILD FAILED. Yuqoridagi PyInstaller xatosini tekshiring.' -ForegroundColor Red
+    Write-Host 'BUILD FAILED.' -ForegroundColor Red
     exit 1
 }
 
 $exe = Join-Path $PSScriptRoot 'dist\CyberShield.exe'
+
 if (-not (Test-Path $exe)) {
     throw "EXE yaratilmadi: $exe"
 }
 
 Write-Host ''
-Write-Host 'BUILD SUCCESSFUL' -ForegroundColor Green
+Write-Host '=====================================' -ForegroundColor Green
+Write-Host '       BUILD SUCCESSFUL              ' -ForegroundColor Green
+Write-Host '=====================================' -ForegroundColor Green
 Write-Host "EXE: $exe" -ForegroundColor Yellow
 Write-Host "Size: $([math]::Round((Get-Item $exe).Length / 1MB, 2)) MB"
