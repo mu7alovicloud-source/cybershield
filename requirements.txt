@@ -1,0 +1,15 @@
+# CyberShield — complete Windows/Desktop + API dependencies
+fastapi>=0.115
+uvicorn>=0.34
+pytest>=8
+python-multipart>=0.0.20
+
+# Desktop/runtime
+PySide6>=6.8,<7
+psutil>=6.0
+watchdog>=4.0
+Pillow>=10.4
+
+# Optional local malware signature engine. Not required for CIBER/GUI.
+# On Python versions without a compatible wheel, installing this package may require C/C++ Build Tools.
+# yara-python>=4.5.0

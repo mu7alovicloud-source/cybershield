@@ -1,0 +1,27 @@
+CIBER / CYBERSHIELD QUICK START (Windows)
+
+From this src folder:
+
+  ciber
+    Opens the CIBER professional terminal UI (CMD only, no PySide6 window).
+
+  cibershield
+    Opens the CyberShield desktop GUI.
+
+  ciber help
+    Shows terminal commands.
+
+  ciber status
+    Shows security/engine status.
+
+  START_API.bat
+    Starts the local FastAPI service.
+
+Important:
+- psutil, watchdog and Pillow are required by terminal mode and are installed automatically.
+- PySide6 is required only by desktop mode.
+- yara-python is OPTIONAL. If Python cannot install a YARA wheel, CIBER still starts.
+- No API keys are bundled. Keep secrets in your local .env file.
+
+If "ciber" is not recognized outside this folder, add this src folder to PATH
+or run the included ciber.cmd from this folder.
